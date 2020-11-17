@@ -37,13 +37,17 @@ class _DataChannelSampleState extends State<DataChannelSample> {
     print(state);
   }
 
-  void _onCandidate(RTCIceCandidate candidate) {
-    print('onCandidate: ' + candidate.candidate);
-    _peerConnection.addCandidate(candidate);
-    setState(() {
-      _sdp += '\n';
-      _sdp += candidate.candidate;
-    });
+  void _onCandidate(RTCIceCandidate candidate) async {
+    try {
+      print('onCandidate: ' + candidate.candidate);
+      await _peerConnection.addCandidate(candidate);
+      setState(() {
+        _sdp += '\n';
+        _sdp += candidate.candidate;
+      });
+    } catch (e) {
+      print('_onCandidate, addCandidate failed => ${e.toString()}');
+    }
   }
 
   void _onRenegotiationNeeded() {
@@ -125,8 +129,8 @@ class _DataChannelSampleState extends State<DataChannelSample> {
 
       _sdp = description.sdp;
       //change for loopback.
-      //description.type = 'answer';
-      //_peerConnection.setRemoteDescription(description);
+      description.type = 'answer';
+      await _peerConnection.setRemoteDescription(description);
     } catch (e) {
       print(e.toString());
     }

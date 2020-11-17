@@ -20,6 +20,10 @@ import 'media_stream_track_impl.dart';
 import 'rtc_data_channel_impl.dart';
 import 'rtc_dtmf_sender_impl.dart';
 
+extension RtcPeerConnection$Ext on html.RtcPeerConnection {
+  js.JsObject get jsObject => js.JsObject.fromBrowserObject(this);
+}
+
 /*
  *  PeerConnection
  */
@@ -194,8 +198,23 @@ class RTCPeerConnectionWeb extends RTCPeerConnection {
 
   @override
   Future<void> addCandidate(RTCIceCandidate candidate) async {
-    await jsutil.promiseToFuture(
-        jsutil.callMethod(_jsPc, 'addIceCandidate', [_iceToJs(candidate)]));
+    try {
+      Completer completer = Completer<void>();
+      var success = js.allowInterop(() {
+        print('addCandidate success');
+        completer.complete();
+      });
+      var failure = js.allowInterop((e) {
+        print('addCandidate falied => ${e.toString()}');
+        completer.completeError(e);
+      });
+      jsutil.callMethod(
+          _jsPc, 'addIceCandidate', [_iceToJs(candidate), success, failure]);
+
+      return completer.future;
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   @override
