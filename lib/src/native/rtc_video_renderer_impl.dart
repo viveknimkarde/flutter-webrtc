@@ -67,6 +67,8 @@ class RTCVideoRendererNative extends VideoRenderer {
     switch (map['event']) {
       case 'onVideoFrame':
         dynamic videoFrame = map['data']; // <== Got video buffer here.
+        print('Frame received');
+        print(videoFrame.runtimeType);
         break;
       case 'didTextureChangeRotation':
         value =
