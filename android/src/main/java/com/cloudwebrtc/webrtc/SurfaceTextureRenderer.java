@@ -97,6 +97,19 @@ public class SurfaceTextureRenderer extends EglRenderer {
   public void onFrame(VideoFrame frame) {
     updateFrameDimensionsAndReportEvents(frame);
     super.onFrame(frame);
+    ConstraintsMap params = new ConstraintsMap();
+   params.putString("event", "onVideoFrame");
+
+  /*copy  frame buffer to byte array*/
+   byte[] bytes;
+   Buffer buffer  = frame. getBuffer();
+   bytes = new byte[buffer.data.remaining()];
+   buffer.data.get(bytes);
+
+   params.putByte("data", bytes);
+
+   /*send event to texture event channel*/
+   eventSink.success(params.toMap());
   }
 
   private SurfaceTexture texture;

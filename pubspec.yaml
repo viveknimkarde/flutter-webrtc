@@ -15,7 +15,7 @@ dev_dependencies:
     sdk: flutter
   pedantic: ^1.11.0
   test:
-    
+
 flutter:
   plugin:
     platforms:
